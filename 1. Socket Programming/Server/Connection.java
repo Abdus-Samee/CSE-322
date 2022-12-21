@@ -100,6 +100,36 @@ public class Connection extends Thread{
         System.out.println("404 : Page not found");
     }
 
+    public void generateDirectoryResponse(File dir){
+        String content ="<!DOCTYPE html>\n" +
+                        "<html lang=\"en\">\n" +
+                        "<head>\n" +
+                        "    <meta charset=\"UTF-8\">\n" +
+                        "    <title>Directory</title>\n" +
+                        "</head>\n" +
+                        "<body>\n" +
+                        "<h1>List of all files:</h1>\n" +
+                        "<ol>\n";
+
+        for(File f : dir.listFiles()){
+            if(f.isDirectory()) content += "<li><a href = \"/" + f.getName() + "\"><b><i>" + f.getPath() + "</i></b></a></li>\n";
+            else content += "<li><a href = \"/" + f.getName() + "\">" + f.getPath() + "</a></li>\n";
+        }
+
+        content += "</ol>\n" +
+                   "</body>\n" +
+                   "</html>";
+
+        pw.write("HTTP/1.1 200 OK\r\n");
+        pw.write("Server: Java HTTP Server: 1.0\r\n");
+        pw.write("Date: " + new Date() + "\r\n");
+        pw.write("Content-Type: text/html\r\n");
+        pw.write("Content-Length: " + content.length() + "\r\n");
+        pw.write("\r\n");
+        pw.write(content);
+        pw.flush();
+    }
+
     @Override
     public void run(){
         while(true){
@@ -116,6 +146,7 @@ public class Connection extends Thread{
 
                     if(res == 1){
                         //code for dir
+                        generateDirectoryResponse(new File(searchedFile.get(0).getPath()));
                     }else if(res == 0){
                         //code for file
                     }else generateErrorMessage();
