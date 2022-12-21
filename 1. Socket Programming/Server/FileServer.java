@@ -19,8 +19,4 @@ public class FileServer {
             new Connection(socket, in, pw, rootPath).start();
         }
     }
-
-    public static void listFileAndDir(){
-
-    }
 }
