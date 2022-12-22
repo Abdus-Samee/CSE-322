@@ -15,8 +15,9 @@ public class FileServer {
         while(true){
             Socket socket = serverSocket.accept();
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter pw = new PrintWriter(socket.getOutputStream());
+            OutputStream pw = socket.getOutputStream();
             new Connection(socket, in, pw, rootPath).start();
         }
     }
 }
+
