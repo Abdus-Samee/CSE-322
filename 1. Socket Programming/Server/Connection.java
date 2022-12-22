@@ -1,22 +1,24 @@
 package Server;
-
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Connection extends Thread{
+    private boolean running;
     private Socket socket;
     private BufferedReader in;
-    private PrintWriter pw;
+    private OutputStream pw;
     private String req = "";
     private String filename = "";
     private String http = "";
     private String rootPath = "";
     private List<File> searchedFile;
 
-    public Connection(Socket socket, BufferedReader in, PrintWriter pw, String rootPath){
+    public Connection(Socket socket, BufferedReader in, OutputStream pw, String rootPath){
+        this.running = true;
         this.socket = socket;
         this.in = in;
         this.pw = pw;
@@ -42,15 +44,17 @@ public class Connection extends Thread{
             req = arr[0].trim();
             filename = arr[1].substring(1).trim();
             http = arr[2].trim();
+            //System.out.println(header);
+            //System.out.println(req+" "+filename+" "+http);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
     }
 
     public int findFile(File dir, String dst) {
-        if((dir == null) || (dir.listFiles() == null)){
-            return -1;
-        }
+//        if((dir == null) || (dir.listFiles() == null)){
+//            return -1;
+//        }
 
         File f = new File(dir.getPath(), dst);
 
@@ -68,10 +72,10 @@ public class Connection extends Thread{
         return -1;
     }
 
-    public void handleIrrelevantRequest(){
-        pw.write("400 NOT FOUND\r\n");
-        pw.write("Server: Java HTTP Server: 1.0\r\n");
-        pw.write("Date: " + new Date() + "\r\n");
+    public void handleIrrelevantRequest() throws Exception {
+        String response = "400 NOT FOUND\r\nServer: Java HTTP Server: 1.0\nDate: \" + new Date() + \"\\r\\n";
+        byte[] arr = response.getBytes();
+        pw.write(arr);
         pw.flush();
     }
 
@@ -87,82 +91,167 @@ public class Connection extends Thread{
         }
 
         String content = sb.toString();
+        String response = "HTTP/1.1 400 NOT FOUND\n" +
+                "Server: Java HTTP Server: 1.0\n" +
+                "Date: " + new Date() + "\r\n" +
+                "Content-Type: text/html\n" +
+                "Content-Length: " + content.length() + "\r\n" +
+                "\r\n" + content;
 
-        pw.write("HTTP/1.1 400 NOT FOUND\r\n");
-        pw.write("Server: Java HTTP Server: 1.0\r\n");
-        pw.write("Date: " + new Date() + "\r\n");
-        pw.write("Content-Type: text/html\r\n");
-        pw.write("Content-Length: " + content.length() + "\r\n");
-        pw.write("\r\n");
-        pw.write(content);
+        byte[] arr = response.getBytes();
+        pw.write(arr);
         pw.flush();
 
         System.out.println("404 : Page not found");
     }
 
-    public void generateDirectoryResponse(File dir){
-        String content ="<!DOCTYPE html>\n" +
-                        "<html lang=\"en\">\n" +
-                        "<head>\n" +
-                        "    <meta charset=\"UTF-8\">\n" +
-                        "    <title>Directory</title>\n" +
-                        "</head>\n" +
-                        "<body>\n" +
-                        "<h1>List of all files:</h1>\n" +
-                        "<ol>\n";
+    public void generateDirectoryResponse(File dir) throws Exception{
+        StringBuilder htmlContent = new StringBuilder();
+        htmlContent.append("<!DOCTYPE html>\n");
+        htmlContent.append("<html lang=\"en\">\n");
+        htmlContent.append("<head>\n");
+        htmlContent.append("<meta charset=\"UTF-8\">\n");
+        htmlContent.append("<title>Directory</title>\n");
+        htmlContent.append("</head>\n");
+        htmlContent.append("<body>\n");
+        htmlContent.append("<h1>List of all files:</h1>\n");
+        htmlContent.append("<ol>\n");
 
         for(File f : dir.listFiles()){
-            if(f.isDirectory()) content += "<li><a href = \"/" + f.getName() + "\"><b><i>" + f.getPath() + "</i></b></a></li>\n";
-            else content += "<li><a href = \"/" + f.getName() + "\">" + f.getPath() + "</a></li>\n";
+            if(f.isDirectory()) htmlContent.append("<li><a href = \"/" + f.getName() + "\"><b><i>" + f.getPath() + "</i></b></a></li>\n");
+            else htmlContent.append("<li><a href = \"/" + f.getName() + "\">" + f.getPath() + "</a></li>\n");
         }
 
-        content += "</ol>\n" +
-                   "</body>\n" +
-                   "</html>";
+        htmlContent.append("</ol>\n");
+        htmlContent.append("</body>\n");
+        htmlContent.append("</html>");
+        String htmlString = htmlContent.toString();
+        byte[] htmlBytes = htmlString.getBytes();
 
-        pw.write("HTTP/1.1 200 OK\r\n");
-        pw.write("Server: Java HTTP Server: 1.0\r\n");
-        pw.write("Date: " + new Date() + "\r\n");
-        pw.write("Content-Type: text/html\r\n");
-        pw.write("Content-Length: " + content.length() + "\r\n");
-        pw.write("\r\n");
-        pw.write(content);
+        String response = "HTTP/1.1 200 OK\r\n" +
+                "Server: Java HTTP Server: 1.0\r\n" +
+                "Date: " + new Date() + "\r\n" +
+                "Content-Type: text/html\r\n" +
+                "Content-Length: " + htmlBytes.length + "\r\n\r\n";
+        pw.write(response.getBytes());
+        pw.write(htmlBytes);
         pw.flush();
+    }
+
+    public void generateFileResponse(File file) throws Exception{
+        StringBuilder htmlContent = new StringBuilder();
+        htmlContent.append("<!DOCTYPE html>\n");
+        htmlContent.append("<html lang=\"en\">\n");
+        htmlContent.append("<head>\n");
+        htmlContent.append("<meta charset=\"UTF-8\">\n");
+        htmlContent.append("<title>Content of File</title>\n");
+        htmlContent.append("</head>\n");
+        htmlContent.append("<body>\n");
+        htmlContent.append("<h1>Content:</h1>\n");
+
+        if(file.getName().toLowerCase().endsWith(".txt")){
+            FileInputStream fis = new FileInputStream(file);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while(( line = br.readLine()) != null ) {
+                sb.append( line );
+                sb.append( '\n' );
+            }
+
+            String text = sb.toString();
+
+            htmlContent.append("<p>" + text + "</p>\n");
+            htmlContent.append("</body>\n");
+            htmlContent.append("</html>");
+            String htmlString = htmlContent.toString();
+            byte[] htmlBytes = htmlString.getBytes();
+
+            String response = "HTTP/1.1 200 OK\r\n" +
+                    "Server: Java HTTP Server: 1.0\r\n" +
+                    "Date: " + new Date() + "\r\n" +
+                    "Content-Type: text/html\r\n" +
+                    "Content-Length: " + htmlBytes.length + "\r\n\r\n";
+            pw.write(response.getBytes());
+            pw.write(htmlBytes);
+            pw.flush();
+        }else if(file.getName().toLowerCase().endsWith(".jpg")){
+            htmlContent.append("<img src=\"/image/" + file.getPath() + "\" alt=\"" + file.getName() + " image\" height=\"800\" width=\"800\">\n");
+            htmlContent.append("</body>\n");
+            htmlContent.append("</html>");
+            String htmlString = htmlContent.toString();
+            byte[] htmlBytes = htmlString.getBytes();
+
+            String htmlResponse = "HTTP/1.1 200 OK\r\n" +
+                    "Server: Java HTTP Server: 1.0\r\n" +
+                    "Date: " + new Date() + "\r\n" +
+                    "Content-Type: text/html\r\n" +
+                    "Content-Length: " + htmlBytes.length + "\r\n\r\n";
+            pw.write(htmlResponse.getBytes());
+            pw.write(htmlBytes);
+
+//            byte[] imageBytes = Files.readAllBytes(file.toPath());
+//            String imageResponse = "HTTP/1.1 200 OK\r\n" +
+//                    "Server: Java HTTP Server: 1.0\r\n" +
+//                    "Date: " + new Date() + "\r\n" +
+//                    "Content-Type: image/jpeg\r\n" +
+//                    "Content-Length: " + imageBytes.length + "\r\n\r\n";
+//            pw.write(imageResponse.getBytes());
+//            pw.write(imageBytes);
+
+//            Thread.sleep(12000);
+            pw.flush();
+        }
+    }
+
+    public void getImage(File image) throws Exception{
+        byte[] imageBytes = Files.readAllBytes(image.toPath());
+        String imageResponse = "HTTP/1.1 200 OK\r\n" +
+                "Server: Java HTTP Server: 1.0\r\n" +
+                "Date: " + new Date() + "\r\n" +
+                "Content-Type: image/jpeg\r\n" +
+                "Content-Length: " + imageBytes.length + "\r\n\r\n";
+        pw.write(imageResponse.getBytes());
+        pw.write(imageBytes);
+        pw.flush();
+    }
+
+    public void closeConnection(){
+        try {
+            this.socket.close();
+            this.running = false;
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     @Override
     public void run(){
-        while(true){
-            try{
-                InputStream is = this.socket.getInputStream();
-                extractFileName(is);
+        try{
+            InputStream is = this.socket.getInputStream();
+            extractFileName(is);
 
-                if(!http.equals("HTTP/1.1") || !req.equals("GET")){
-                    handleIrrelevantRequest();
-                    break;
-                }else{
-                    int res = findFile(new File(this.rootPath), this.filename);
-                    //System.out.println("RES: " + res);
-
-                    if(res == 1){
-                        //code for dir
-                        generateDirectoryResponse(new File(searchedFile.get(0).getPath()));
-                    }else if(res == 0){
-                        //code for file
-                    }else generateErrorMessage();
-
-                    break;
-                }
-
-                //use FileFilter
-            }catch(Exception e){
-                System.out.println(e);
+            if(!http.equals("HTTP/1.1") || !req.equals("GET") || this.filename.equals("favicon.ico")){
+                handleIrrelevantRequest();
             }
-        }
+            else if(filename.startsWith("image/")){
+                //send an image
+                getImage(new File(filename.substring(6)));
+            }
+            else{
+                int res = findFile(new File(this.rootPath), this.filename);
+                //System.out.println("FILENAME: " + this.filename + ", RES: " + res);
 
-        try {
-            this.socket.close();
-        } catch (IOException e) {
+                if(res == 1){
+                    //code for dir
+                    generateDirectoryResponse(new File(searchedFile.get(0).getPath()));
+                }else if(res == 0){
+                    //code for file
+                    generateFileResponse(new File(searchedFile.get(0).getPath()));
+                }else if(res == -1) generateErrorMessage();
+            }
+            closeConnection();
+        }catch(Exception e){
             System.out.println(e);
         }
     }
