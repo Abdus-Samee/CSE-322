@@ -9,15 +9,16 @@ import java.util.List;
 public class Connection extends Thread{
     private boolean running;
     private Socket socket;
-    private BufferedReader in;
+    private InputStream in;
     private OutputStream pw;
     private String req = "";
     private String filename = "";
     private String http = "";
     private String rootPath = "";
     private List<File> searchedFile;
+    static final int CHUNK_SIZE = 50;
 
-    public Connection(Socket socket, BufferedReader in, OutputStream pw, String rootPath){
+    public Connection(Socket socket, InputStream in, OutputStream pw, String rootPath){
         this.running = true;
         this.socket = socket;
         this.in = in;
@@ -44,7 +45,7 @@ public class Connection extends Thread{
             req = arr[0].trim();
             filename = arr[1].substring(1).trim();
             http = arr[2].trim();
-            //System.out.println(header);
+            filename = filename.replaceAll("%20", " ");
             //System.out.println(req+" "+filename+" "+http);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -52,11 +53,12 @@ public class Connection extends Thread{
     }
 
     public int findFile(File dir, String dst) {
-//        if((dir == null) || (dir.listFiles() == null)){
-//            return -1;
-//        }
-
         File f = new File(dir.getPath(), dst);
+
+        if(f.equals(dir)){
+            searchedFile.add(f);
+            return 1;
+        }
 
         for (File entry : dir.listFiles()) {
             if(f.equals(entry)){
@@ -189,18 +191,31 @@ public class Connection extends Thread{
                     "Content-Length: " + htmlBytes.length + "\r\n\r\n";
             pw.write(htmlResponse.getBytes());
             pw.write(htmlBytes);
-
-//            byte[] imageBytes = Files.readAllBytes(file.toPath());
-//            String imageResponse = "HTTP/1.1 200 OK\r\n" +
-//                    "Server: Java HTTP Server: 1.0\r\n" +
-//                    "Date: " + new Date() + "\r\n" +
-//                    "Content-Type: image/jpeg\r\n" +
-//                    "Content-Length: " + imageBytes.length + "\r\n\r\n";
-//            pw.write(imageResponse.getBytes());
-//            pw.write(imageBytes);
-
-//            Thread.sleep(12000);
             pw.flush();
+        }else{
+            FileInputStream fis = new FileInputStream(file);
+
+            String type = "";
+            if(file.getName().toLowerCase().endsWith(".pdf")) type = "application/pdf";
+            else if(file.getName().toLowerCase().endsWith(".docx")) type = "application/msword";
+
+            String httpResponse = "HTTP/1.1 200 OK\r\n" +
+                    "Server: Java HTTP Server: 1.0\r\n" +
+                    "Date: " + new Date() + "\r\n" +
+                    "Content-Type: " + type + "\r\n" +
+                    "Content-Disposition: attachment; filename=" + file.getName() + "\r\n" +
+                    "Content-Length: " + fis.available() + "\r\n\r\n";
+            pw.write(httpResponse.getBytes());
+
+            int count;
+            byte[] buffer = new byte[CHUNK_SIZE];
+            while ((count = fis.read(buffer)) > 0)
+            {
+                pw.write(buffer, 0, count);
+            }
+
+            pw.flush();
+            fis.close();
         }
     }
 
@@ -228,8 +243,7 @@ public class Connection extends Thread{
     @Override
     public void run(){
         try{
-            InputStream is = this.socket.getInputStream();
-            extractFileName(is);
+            extractFileName(in);
 
             if(!http.equals("HTTP/1.1") || !req.equals("GET") || this.filename.equals("favicon.ico")){
                 handleIrrelevantRequest();
@@ -252,6 +266,7 @@ public class Connection extends Thread{
             }
             closeConnection();
         }catch(Exception e){
+            closeConnection();
             System.out.println(e);
         }
     }
