@@ -17,6 +17,7 @@ public class Connection extends Thread{
     private String rootPath = "";
     private List<File> searchedFile;
     static final int CHUNK_SIZE = 50;
+    static final String LOG_FILE = "log.txt";
 
     public Connection(Socket socket, InputStream in, OutputStream pw, String rootPath){
         this.running = true;
@@ -75,10 +76,12 @@ public class Connection extends Thread{
     }
 
     public void handleIrrelevantRequest() throws Exception {
-        String response = "400 NOT FOUND\r\nServer: Java HTTP Server: 1.0\nDate: \" + new Date() + \"\\r\\n";
+        String response = "400 NOT FOUND\r\nServer: Java HTTP Server: 1.0\r\nDate: " + new Date() + "\r\n";
         byte[] arr = response.getBytes();
         pw.write(arr);
         pw.flush();
+
+        generateLog(response);
     }
 
     public void generateErrorMessage() throws Exception{
@@ -93,10 +96,10 @@ public class Connection extends Thread{
         }
 
         String content = sb.toString();
-        String response = "HTTP/1.1 400 NOT FOUND\n" +
-                "Server: Java HTTP Server: 1.0\n" +
+        String response = "HTTP/1.1 400 NOT FOUND\r\n" +
+                "Server: Java HTTP Server: 1.0\r\n" +
                 "Date: " + new Date() + "\r\n" +
-                "Content-Type: text/html\n" +
+                "Content-Type: text/html\r\n" +
                 "Content-Length: " + content.length() + "\r\n" +
                 "\r\n" + content;
 
@@ -105,6 +108,7 @@ public class Connection extends Thread{
         pw.flush();
 
         System.out.println("404 : Page not found");
+        generateLog(response);
     }
 
     public void generateDirectoryResponse(File dir) throws Exception{
@@ -138,6 +142,8 @@ public class Connection extends Thread{
         pw.write(response.getBytes());
         pw.write(htmlBytes);
         pw.flush();
+
+        generateLog(response);
     }
 
     public void generateFileResponse(File file) throws Exception{
@@ -177,6 +183,8 @@ public class Connection extends Thread{
             pw.write(response.getBytes());
             pw.write(htmlBytes);
             pw.flush();
+
+            generateLog(response);
         }else if(file.getName().toLowerCase().endsWith(".jpg")){
             htmlContent.append("<img src=\"/image/" + file.getPath() + "\" alt=\"" + file.getName() + " image\" height=\"800\" width=\"800\">\n");
             htmlContent.append("</body>\n");
@@ -192,6 +200,8 @@ public class Connection extends Thread{
             pw.write(htmlResponse.getBytes());
             pw.write(htmlBytes);
             pw.flush();
+
+            generateLog(htmlResponse);
         }else{
             FileInputStream fis = new FileInputStream(file);
 
@@ -216,6 +226,8 @@ public class Connection extends Thread{
 
             pw.flush();
             fis.close();
+
+            generateLog(httpResponse);
         }
     }
 
@@ -229,6 +241,23 @@ public class Connection extends Thread{
         pw.write(imageResponse.getBytes());
         pw.write(imageBytes);
         pw.flush();
+
+        generateLog(imageResponse);
+    }
+
+    public void generateLog(String response){
+        try{
+            BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true));
+            bw.write("----------HTTP REQUEST----------\n");
+            bw.write("Http request:\n");
+            bw.write(this.req + " " + this.filename + " " + this.http + "\n\n");
+            bw.write("Http response:\n");
+            bw.write(response + "\n");
+            bw.close();
+        }catch(Exception e){
+            System.out.println(e);
+            closeConnection();
+        }
     }
 
     public void closeConnection(){
