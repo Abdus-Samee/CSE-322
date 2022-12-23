@@ -296,7 +296,7 @@ public class Connection extends Thread{
             closeConnection();
         }catch(Exception e){
             closeConnection();
-            System.out.println(e);
+            //System.out.println(e);
         }
     }
 }
