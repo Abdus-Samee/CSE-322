@@ -14,17 +14,17 @@ public class Connection extends Thread{
     private String req = "";
     private String filename = "";
     private String http = "";
-    private String rootPath = "";
     private List<File> searchedFile;
+    static final String rootPath = "root/";
+    static final String uploadPath = "uploaded/";
     static final int CHUNK_SIZE = 50;
     static final String LOG_FILE = "log.txt";
 
-    public Connection(Socket socket, InputStream in, OutputStream pw, String rootPath){
+    public Connection(Socket socket, InputStream in, OutputStream pw){
         this.running = true;
         this.socket = socket;
         this.in = in;
         this.pw = pw;
-        this.rootPath = rootPath;
         this.searchedFile = new ArrayList<>();
     }
 
@@ -43,11 +43,17 @@ public class Connection extends Thread{
             }
 
             String[] arr = header.split(" ");
-            req = arr[0].trim();
-            filename = arr[1].substring(1).trim();
-            http = arr[2].trim();
+            if(arr.length == 3){
+                req = arr[0].trim();
+                filename = arr[1].substring(1).trim();
+                http = arr[2].trim();
+            }else{
+                req = arr[0].trim();
+                filename = arr[1].trim();
+            }
             filename = filename.replaceAll("%20", " ");
             //System.out.println(req+" "+filename+" "+http);
+            //System.out.println(req+" "+filename);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
@@ -245,6 +251,16 @@ public class Connection extends Thread{
         generateLog(imageResponse);
     }
 
+    public void uploadFile(File file) throws Exception{
+        FileOutputStream fos = new FileOutputStream(file);
+        BufferedInputStream bin = new BufferedInputStream(in);
+        byte[] input = new byte[CHUNK_SIZE];
+        int c;
+        while((c = bin.read(input)) != -1) fos.write(input, 0, c);
+        fos.close();
+        bin.close();
+    }
+
     public void generateLog(String response){
         try{
             BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true));
@@ -274,7 +290,10 @@ public class Connection extends Thread{
         try{
             extractFileName(in);
 
-            if(!http.equals("HTTP/1.1") || !req.equals("GET") || this.filename.equals("favicon.ico")){
+            if(req.equals("UPLOAD")){
+                uploadFile(new File(uploadPath, this.filename));
+            }
+            else if(!http.equals("HTTP/1.1") || !req.equals("GET") || this.filename.equals("favicon.ico")){
                 handleIrrelevantRequest();
             }
             else if(filename.startsWith("image/")){
