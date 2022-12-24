@@ -6,7 +6,6 @@ import java.net.Socket;
 
 public class FileServer {
     static final int PORT = 5021;
-    static final String rootPath = "root/";
 
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = new ServerSocket(PORT);
@@ -16,7 +15,7 @@ public class FileServer {
             Socket socket = serverSocket.accept();
             InputStream in = socket.getInputStream();
             OutputStream pw = socket.getOutputStream();
-            new Connection(socket, in, pw, rootPath).start();
+            new Connection(socket, in, pw).start();
         }
     }
 }
