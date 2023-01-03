@@ -259,6 +259,11 @@ public class Connection extends Thread{
         while((c = bin.read(input)) != -1) fos.write(input, 0, c);
         fos.close();
         bin.close();
+        System.out.println("Uploaded: " + this.filename);
+    }
+
+    public void uploadFileError(String msg){
+        System.out.println("Uploading file " + this.filename.split("_")[0] + " " + msg);
     }
 
     public void generateLog(String response){
@@ -291,7 +296,9 @@ public class Connection extends Thread{
             extractFileName(in);
 
             if(req.equals("UPLOAD")){
-                uploadFile(new File(uploadPath, this.filename));
+                if(this.filename.endsWith("_format")) uploadFileError("invalid file format");
+                else if(this.filename.endsWith("_name")) uploadFileError("invalid file name");
+                else uploadFile(new File(uploadPath, this.filename));
             }
             else if(!http.equals("HTTP/1.1") || !req.equals("GET") || this.filename.equals("favicon.ico")){
                 handleIrrelevantRequest();
@@ -305,10 +312,8 @@ public class Connection extends Thread{
                 //System.out.println("FILENAME: " + this.filename + ", RES: " + res);
 
                 if(res == 1){
-                    //code for dir
                     generateDirectoryResponse(new File(searchedFile.get(0).getPath()));
                 }else if(res == 0){
-                    //code for file
                     generateFileResponse(new File(searchedFile.get(0).getPath()));
                 }else if(res == -1) generateErrorMessage();
             }
