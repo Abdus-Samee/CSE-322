@@ -191,7 +191,7 @@ public class Connection extends Thread{
             pw.flush();
 
             generateLog(response);
-        }else if(file.getName().toLowerCase().endsWith(".jpg")){
+        }else if(file.getName().toLowerCase().endsWith(".jpg") || file.getName().toLowerCase().endsWith(".png") || file.getName().toLowerCase().endsWith(".bmp")){
             htmlContent.append("<img src=\"/image/" + file.getPath() + "\" alt=\"" + file.getName() + " image\" height=\"800\" width=\"800\">\n");
             htmlContent.append("</body>\n");
             htmlContent.append("</html>");
@@ -214,6 +214,8 @@ public class Connection extends Thread{
             String type = "";
             if(file.getName().toLowerCase().endsWith(".pdf")) type = "application/pdf";
             else if(file.getName().toLowerCase().endsWith(".docx")) type = "application/msword";
+            else if(file.getName().toLowerCase().endsWith(".mp4")) type = "video/mp4";
+            else if(file.getName().toLowerCase().endsWith(".mp4")) type = "audio/mpeg";
 
             String httpResponse = "HTTP/1.1 200 OK\r\n" +
                     "Server: Java HTTP Server: 1.0\r\n" +
@@ -238,11 +240,16 @@ public class Connection extends Thread{
     }
 
     public void getImage(File image) throws Exception{
+        String type = "";
+        if(image.getName().toLowerCase().endsWith(".jpg")) type = "image/jpeg";
+        else if(image.getName().toLowerCase().endsWith(".png")) type = "image/png";
+        else if(image.getName().toLowerCase().endsWith(".bmp")) type = "image/bmp";
+
         byte[] imageBytes = Files.readAllBytes(image.toPath());
         String imageResponse = "HTTP/1.1 200 OK\r\n" +
                 "Server: Java HTTP Server: 1.0\r\n" +
                 "Date: " + new Date() + "\r\n" +
-                "Content-Type: image/jpeg\r\n" +
+                "Content-Type: " + type + "\r\n" +
                 "Content-Length: " + imageBytes.length + "\r\n\r\n";
         pw.write(imageResponse.getBytes());
         pw.write(imageBytes);
