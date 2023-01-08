@@ -11,7 +11,7 @@ public class ClientConnection extends Thread{
     private OutputStream os;
     static final String FILE_PATH = "src/Client/dir/";
     static final int CHUNK_SIZE = 50;
-    private String[] extensions = {"txt", "pdf", "jpg", "png", "bmp", "mp4"};
+    private String[] extensions = {"txt", "pdf", "docx", "jpg", "png", "bmp", "mp4", "doc"};
 
     public ClientConnection(Socket socket, String filename) throws Exception{
         this.filename = filename;
@@ -81,7 +81,7 @@ public class ClientConnection extends Thread{
 
             for(File f : files){
                 if(f.equals(reqd)){
-                    if(checkIfFileHasExtension(f.getName().split("[.]", 0)[1], extensions)) found = 1;
+                    if(checkIfFileHasExtension(f.getName().toLowerCase().split("[.]", 0)[1], extensions)) found = 1;
                     else found = 0;
                     break;
                 }
