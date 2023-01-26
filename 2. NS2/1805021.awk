@@ -35,7 +35,7 @@ BEGIN {
     }
 
 
-    if (layer == "AGT" && packet_type == "cbr") {
+    if (layer == "AGT" && packet_type == "exp") {
         
         if(event == "s") {
             sent_time[packet_id] = time_sec;
@@ -56,7 +56,7 @@ BEGIN {
         }
     }
 
-    if (packet_type == "cbr" && event == "D") {
+    if (packet_type == "exp" && event == "D") {
         dropped_packets += 1;
     }
 }
