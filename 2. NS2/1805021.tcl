@@ -5,12 +5,9 @@ set ns [new Simulator]
 
 if {[lindex $argv 0] == "-x"} {
     set val(x) [lindex $argv 1]
-} else {
-    set val(x) 500
-}
-if {[lindex $argv 0] == "-y"} {
     set val(y) [lindex $argv 1]
 } else {
+    set val(x) 500
     set val(y) 500
 }
 if {[lindex $argv 0] == "-nodes"} {
@@ -158,9 +155,6 @@ for {set i 0} {$i < $val(row)} {incr i} {
     }
 }
 
-
-
-
 # set val(nf)         20               ; # number of flows
 
 for {set i 0} {$i < $val(nf)} {incr i} {
@@ -170,15 +164,6 @@ for {set i 0} {$i < $val(nf)} {incr i} {
     while {$src == $dest} {
         set dest [expr int(rand() * $val(nn))]
     }
-
-    # Traffic config
-    # create agent
-    set tcp [new Agent/TCP]
-    set tcp_sink [new Agent/TCPSink]
-
-    # attach to nodes
-    $ns attach-agent $node($src) $tcp
-    $ns attach-agent $node($dest) $tcp_sink
 
     # create udp agents
     set udp [new Agent/UDP]
@@ -190,12 +175,14 @@ for {set i 0} {$i < $val(nf)} {incr i} {
     $ns connect $udp $null
 
     # Traffic generator -> Exponential traffic
-    set cbr [new Application/Traffic/CBR]
+    set exp [new Application/Traffic/Exponential]
+    # define packet size
+    $exp set packetSize_ 500
     # attach to agent
-    $cbr attach-agent $udp
+    $exp attach-agent $udp
     
     # start traffic generation
-    $ns at 1.0 "$cbr start"
+    $ns at 1.0 "$exp start"
 }
 
 
