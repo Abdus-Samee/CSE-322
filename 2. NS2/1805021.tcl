@@ -1,6 +1,34 @@
 # simulator
 set ns [new Simulator]
 
+# assign arguments]"
+
+if {[lindex $argv 0] == "-x"} {
+    set val(x) [lindex $argv 1]
+} else {
+    set val(x) 500
+}
+if {[lindex $argv 0] == "-y"} {
+    set val(y) [lindex $argv 1]
+} else {
+    set val(y) 500
+}
+if {[lindex $argv 0] == "-nodes"} {
+    set val(nn) [lindex $argv 1]
+} else {
+    set val(nn) 40
+}
+if {[lindex $argv 0] == "-flows"} {
+    set val(nf) [lindex $argv 1]
+} else {
+    set val(nf) 20
+}
+
+
+# set val(x) [lindex $argv 1]
+# set val(y) [lindex $argv 1]
+# set val(nn) [lindex $argv 3]
+# set val(nf) [lindex $argv 5]
 
 # ======================================================================
 # Define options
@@ -13,11 +41,19 @@ set val(ifq)          Queue/DropTail/PriQueue  ;# Interface queue type
 set val(ifqlen)       50                       ;# max packet in ifq
 set val(netif)        Phy/WirelessPhy          ;# network interface type; Phy/WirelessPhy/802_15_4
 set val(mac)          Mac/802_11               ;# MAC type; Mac/802_15_4
-set val(rp)           AODV                     ;# ad-hoc routing protocol 
-set val(nn)           20                       ;# number of mobilenodes
-set val(x)            500                      ;# x dimension of area
-set val(y)            500                      ;# y dimension of area
+set val(rp)           AODV                     ;# ad-hoc routing protocol
+# set val(x)            250                      ;# x dimension of the area
+# set val(y)            250                      ;# y dimension of the area
+# set val(nn)           20                       ;# number of nodes
+# set val(nf)           10                       ;# number of flows
+
 # =======================================================================
+
+# print the above args
+puts "X: $val(x)"
+puts "Y: $val(y)"
+puts "Nodes: $val(nn)"
+puts "Flows: $val(nf)"
 
 # trace file
 set trace_file [open 1805021.tr w]
@@ -80,13 +116,13 @@ $ns node-config -adhocRouting $val(rp) \
 if {$val(nn) == 20} {
     set val(row) 5
     set val(col) 4
-} elseif {$val(rp) == 40} {
+} elseif {$val(nn) == 40} {
     set val(row) 5
     set val(col) 8
-} elseif {$val(rp) == 60} {
+} elseif {$val(nn) == 60} {
     set val(row) 6
     set val(col) 10
-} elseif {$val(rp) == 80} {
+} elseif {$val(nn) == 80} {
     set val(row) 8
     set val(col) 10
 } else {
@@ -125,7 +161,7 @@ for {set i 0} {$i < $val(row)} {incr i} {
 
 
 
-set val(nf)         20               ; # number of flows
+# set val(nf)         20               ; # number of flows
 
 for {set i 0} {$i < $val(nf)} {incr i} {
     # select random source and destination who are distinct
