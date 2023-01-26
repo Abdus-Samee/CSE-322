@@ -1,4 +1,5 @@
 # PLOT GRAPH USING PYTHON PLEASE !!!
+# awk -f 1805021.awk 1805021.tr
 
 BEGIN {
     received_packets = 0;
@@ -34,7 +35,7 @@ BEGIN {
     }
 
 
-    if (layer == "AGT" && packet_type == "tcp") {
+    if (layer == "AGT" && packet_type == "cbr") {
         
         if(event == "s") {
             sent_time[packet_id] = time_sec;
@@ -55,7 +56,7 @@ BEGIN {
         }
     }
 
-    if (packet_type == "tcp" && event == "D") {
+    if (packet_type == "cbr" && event == "D") {
         dropped_packets += 1;
     }
 }
@@ -65,14 +66,16 @@ END {
     end_time = time_sec;
     simulation_time = end_time - start_time;
 
+    # print "Sent Packets: ", sent_packets;
+    # print "Dropped Packets: ", dropped_packets;
+    # print "Received Packets: ", received_packets;
 
-    print "Sent Packets: ", sent_packets;
-    print "Dropped Packets: ", dropped_packets;
-    print "Received Packets: ", received_packets;
+    # print "-------------------------------------------------------------";
+    # print "Throughput: ", (received_bytes * 8) / simulation_time, "bits/sec";
+    # print "Average Delay: ", (total_delay / received_packets), "seconds";
+    # print "Delivery ratio: ", (received_packets / sent_packets);
+    # print "Drop ratio: ", (dropped_packets / sent_packets);
 
-    print "-------------------------------------------------------------";
-    print "Throughput: ", (received_bytes * 8) / simulation_time, "bits/sec";
-    print "Average Delay: ", (total_delay / received_packets), "seconds";
-    print "Delivery ratio: ", (received_packets / sent_packets);
-    print "Drop ratio: ", (dropped_packets / sent_packets);
+    print (received_bytes * 8) / simulation_time, ",", total_delay / received_packets, 
+          ",", received_packets / sent_packets, ",", dropped_packets / sent_packets;
 }
