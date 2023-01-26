@@ -11,23 +11,25 @@ set val(ant)          Antenna/OmniAntenna      ;# Antenna type
 set val(ll)           LL                       ;# Link layer type
 set val(ifq)          Queue/DropTail/PriQueue  ;# Interface queue type
 set val(ifqlen)       50                       ;# max packet in ifq
-set val(netif)        Phy/WirelessPhy          ;# network interface type
-set val(mac)          Mac/802_11               ;# MAC type
+set val(netif)        Phy/WirelessPhy          ;# network interface type; Phy/WirelessPhy/802_15_4
+set val(mac)          Mac/802_11               ;# MAC type; Mac/802_15_4
 set val(rp)           AODV                     ;# ad-hoc routing protocol 
-set val(nn)           100                       ;# number of mobilenodes
+set val(nn)           20                       ;# number of mobilenodes
+set val(x)            500                      ;# x dimension of area
+set val(y)            500                      ;# y dimension of area
 # =======================================================================
 
 # trace file
-set trace_file [open trace.tr w]
+set trace_file [open 1805021.tr w]
 $ns trace-all $trace_file
 
 # nam file
-set nam_file [open animation.nam w]
-$ns namtrace-all-wireless $nam_file 500 500
+set nam_file [open 1805021.nam w]
+$ns namtrace-all-wireless $nam_file $val(x) $val(y)
 
 # topology: to keep track of node movements
 set topo [new Topography]
-$topo load_flatgrid 500 500 ;# 500m x 500m area
+$topo load_flatgrid $val(x) $val(y) ;# xm * ym area
 
 
 # general operation director for mobilenodes
@@ -108,6 +110,12 @@ for {set i 0} {$i < $val(row)} {incr i} {
         $node($k) set Y_ [expr (500 - 60 * $i)]
         $node($k) set Z_ 0
 
+        set destX [expr int(rand() * $val(x))]
+        set destY [expr int(rand() * $val(y))]
+        set velocity [expr int(rand() * 4) + 1]
+
+        $ns at 1.0 "$node($k) setdest $destX $destY $velocity"
+
         $ns initial_node_pos $node($k) 20
 
         incr k
@@ -117,31 +125,41 @@ for {set i 0} {$i < $val(row)} {incr i} {
 
 
 
-# Traffic
-set val(nf)         20               ;# number of flows
+set val(nf)         20               ; # number of flows
 
 for {set i 0} {$i < $val(nf)} {incr i} {
-    set src $i
-    set dest [expr ($i + 1)%$val(nn)]
+    # select random source and destination who are distinct
+    set src [expr int(rand() * $val(nn))]
+    set dest [expr int(rand() * $val(nn))]
+    while {$src == $dest} {
+        set dest [expr int(rand() * $val(nn))]
+    }
 
     # Traffic config
     # create agent
     set tcp [new Agent/TCP]
     set tcp_sink [new Agent/TCPSink]
+
     # attach to nodes
     $ns attach-agent $node($src) $tcp
     $ns attach-agent $node($dest) $tcp_sink
-    # connect agents
-    $ns connect $tcp $tcp_sink
-    $tcp set fid_ $i
 
-    # Traffic generator
-    set ftp [new Application/FTP]
+    # create udp agents
+    set udp [new Agent/UDP]
+    set null [new Agent/Null]
+    
+    # connect agents
+    $ns attach-agent $node($src) $udp
+    $ns attach-agent $node($dest) $null
+    $ns connect $udp $null
+
+    # Traffic generator -> Exponential traffic
+    set cbr [new Application/Traffic/CBR]
     # attach to agent
-    $ftp attach-agent $tcp
+    $cbr attach-agent $udp
     
     # start traffic generation
-    $ns at 1.0 "$ftp start"
+    $ns at 1.0 "$cbr start"
 }
 
 
