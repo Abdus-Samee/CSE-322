@@ -4,6 +4,7 @@
 \usepackage{multicol}
 \usepackage[table]{xcolor}
 \usepackage{amsmath}
+\usepackage{graphicx}
 
 \title{%
   \begin{center}
@@ -43,18 +44,47 @@ The following parameters were assigned to me:
 \begin{itemize}
      \item The wireless MAC which was assigned was 802.15.4
      \begin{description}
-         \item[MAC 802.15.4] We basically know it as PAN.
+         \item[MAC 802.15.4] We basically know it as PAN. This is used in low-rate wireless networks. The range of communication is short under this IEEE standard.
      \end{description}
      \item AODV routing protocol was assigned for the wireless network
      \begin{description}
-         \item[AODV] Known as Ad Hoc On-Deman Distance Vector, is a reactive protocol where routes are created only when they are needed. Mostly used in mobile networks.
+         \item[AODV] Known as Ad Hoc On-Deman Distance Vector, is a reactive protocol where routes are created only when they are needed. So they have no consistent routing table. Mostly used in mobile networks.
      \end{description}
-     \item UDP was assigned as Agent and Exponential Traffic as the Application
+     \item UDP was assigned as Agent and Exponential Traffic as the Application.
      \begin{description}
-         \item[UDP] Abbreviation of User Datagram Protocol. It is a transfer layer protocol, which uses simple connectionless communication model with minimum protocol mechanisms. It transmits data without any acknowledgment involved.
-         \item[Exponential Traffic] It is more like SMTP traffic
+         \item[UDP] Abbreviation of User Datagram Protocol. It is a transfer layer protocol, which uses a simple connectionless communication model with minimum protocol mechanisms. It transmits data without any acknowledgment involved, so the connection is not reliable. Unlike TCP, it has no error-checking method and so packets are lost often.
+         \item[Exponential Traffic] It generally creates ON/OFF traffic. Generates bursts of packets depending on an exponential distribution during ON traffic. 
      \end{description}
-     \item \textbf{Grid} node positioning and \textbf{Random} source-destination were also assigned
+     \item \textbf{Grid} node positioning and \textbf{Random} source-destination were also assigned.
 \end{itemize}
+
+\section{Graphs}
+The \textbf{12} graphs are shown below:
+
+\newpage
+
+\begin{center}
+    \includegraphics[]{thruVarea.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\begin{center}
+    \includegraphics[]{delayVarea.png}
+\end{center}
+
+Time delay increases as the area increases since it takes a longer time to reach the sink. Since random sinks are being attached to random sources which are not identical, there can be exceptions resulting in a decrease as seen in the case of \texttt{1000X1000} and \texttt{1250X1250}.
+
+\begin{center}
+    \includegraphics[]{delVarea.png}
+\end{center}
+
+The delivery of packets is not satisfactory and is random in this case. The ratio is so small. The NS2 simulator shows random values of delivery ratio every time it is run and that is why there are ups and downs as the area increases. A general inference can be that the delivery ratio increases as the area increases.
+
+\begin{center}
+    \includegraphics[]{dropVarea.png}
+\end{center}
+
+As discussed before, the drop of packets is too high compared to the delivery of the same. Due to exponential traffic increasing with time and queue length being constant at 50, packets are dropped at a higher rate. So a general inference here is that the drop ratio decreases as the area increases, opposite to that of delivery ratio.
 
 \end{document}
