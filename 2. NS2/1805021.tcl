@@ -36,8 +36,8 @@ set val(ant)          Antenna/OmniAntenna      ;# Antenna type
 set val(ll)           LL                       ;# Link layer type
 set val(ifq)          Queue/DropTail/PriQueue  ;# Interface queue type
 set val(ifqlen)       50                       ;# max packet in ifq
-set val(netif)        Phy/WirelessPhy          ;# network interface type; Phy/WirelessPhy/802_15_4
-set val(mac)          Mac/802_11               ;# MAC type; Mac/802_15_4
+set val(netif)        Phy/WirelessPhy/802_15_4          ;# network interface type; Phy/WirelessPhy/802_15_4
+set val(mac)          Mac/802_15_4               ;# MAC type; Mac/802_15_4
 set val(rp)           AODV                     ;# ad-hoc routing protocol
 # set val(x)            250                      ;# x dimension of the area
 # set val(y)            250                      ;# y dimension of the area
@@ -195,7 +195,7 @@ for {set i 0} {$i < $val(nf)} {incr i} {
     # Traffic generator -> Exponential traffic
     set exp [new Application/Traffic/Exponential]
     # define packet size
-    #$exp set packetSize_ 500
+    $exp set packetSize_ 40
     # attach to agent
     $exp attach-agent $udp
     
