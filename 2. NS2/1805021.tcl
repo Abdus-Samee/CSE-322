@@ -131,20 +131,38 @@ if {$val(nn) == 20} {
     # puts "col: $val(col)"
 }
 
+# set seed
+set seed 1805021
+
 #tracks number of nodes created
 set k 0
+set x_limit [expr ($val(x)-10)/($val(col)+1)]
+set y_limit [expr ($val(y)-10)/($val(row))]
+set half [expr int($val(x) / 2)]
 
 for {set i 0} {$i < $val(row)} {incr i} {
     for {set j 0} {$j < $val(col)} {incr j} {
         set node($k) [$ns node]
         $node($k) random-motion 0       ;# disable random motion
 
-        $node($k) set X_ [expr (10 + 60 * ($j + 1))]
-        $node($k) set Y_ [expr (500 - 60 * $i)]
+        set cur_x [expr (10 + $x_limit * ($j + 1))]
+        set cur_y [expr (10 + $y_limit * $i)]
+        $node($k) set X_ $cur_x
+        $node($k) set Y_ $cur_y
         $node($k) set Z_ 0
 
-        set destX [expr int(rand() * $val(x))]
-        set destY [expr int(rand() * $val(y))]
+        if {$cur_x <= $half} {
+            set destX [expr $cur_x + 20]
+        } else {
+            set destX [expr $cur_x - 20]
+        }
+
+        if {$cur_y <= $half} {
+            set destY [expr $cur_y + 20]
+        } else {
+            set destY [expr $cur_y - 20]
+        }
+
         set velocity [expr int(rand() * 4) + 1]
 
         $ns at 1.0 "$node($k) setdest $destX $destY $velocity"
@@ -177,7 +195,7 @@ for {set i 0} {$i < $val(nf)} {incr i} {
     # Traffic generator -> Exponential traffic
     set exp [new Application/Traffic/Exponential]
     # define packet size
-    $exp set packetSize_ 500
+    #$exp set packetSize_ 500
     # attach to agent
     $exp attach-agent $udp
     
