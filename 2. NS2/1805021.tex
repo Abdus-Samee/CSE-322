@@ -58,33 +58,87 @@ The following parameters were assigned to me:
      \item \textbf{Grid} node positioning and \textbf{Random} source-destination were also assigned.
 \end{itemize}
 
-\section{Graphs}
-The \textbf{12} graphs are shown below:
+\section{Graphs - Changing Area}
+The \textbf{4} graphs are shown below:
 
 \newpage
 
 \begin{center}
-    \includegraphics[]{thruVarea.png}
+    \includegraphics[scale=0.6]{thruVarea.png}
 \end{center}
 
 Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
 
 \begin{center}
-    \includegraphics[]{delayVarea.png}
+    \includegraphics[scale=0.6]{delayVarea.png}
 \end{center}
 
 Time delay increases as the area increases since it takes a longer time to reach the sink. Since random sinks are being attached to random sources which are not identical, there can be exceptions resulting in a decrease as seen in the case of \texttt{1000X1000} and \texttt{1250X1250}.
 
 \begin{center}
-    \includegraphics[]{delVarea.png}
+    \includegraphics[scale=0.6]{delVarea.png}
 \end{center}
 
 The delivery of packets is not satisfactory and is random in this case. The ratio is so small. The NS2 simulator shows random values of delivery ratio every time it is run and that is why there are ups and downs as the area increases. A general inference can be that the delivery ratio increases as the area increases.
 
 \begin{center}
-    \includegraphics[]{dropVarea.png}
+    \includegraphics[scale=0.6]{dropVarea.png}
 \end{center}
 
-As discussed before, the drop of packets is too high compared to the delivery of the same. Due to exponential traffic increasing with time and queue length being constant at 50, packets are dropped at a higher rate. So a general inference here is that the drop ratio decreases as the area increases, opposite to that of delivery ratio.
+As discussed before, the drop of packets is too high compared to the delivery of the same. Due to exponential traffic increasing with time and queue length being constant at 50, packets are dropped at a higher rate. So a general inference here is that the drop ratio decreases as the area increases, opposite to that of the delivery ratio.
+
+\section{Graphs - Changing Node count}
+The \textbf{4} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{thruVnodes.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delayVnodes.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delVnodes.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\begin{center}
+    \includegraphics[scale=0.6]{dropVnodes.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\section{Graphs - Changing Flow number}
+The \textbf{4} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{thruVflows.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delayVflows.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delVflows.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\begin{center}
+    \includegraphics[scale=0.6]{dropVflows.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
 
 \end{document}
