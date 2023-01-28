@@ -139,6 +139,7 @@ set k 0
 set x_limit [expr ($val(x)-10)/($val(col)+1)]
 set y_limit [expr ($val(y)-10)/($val(row))]
 set half [expr int($val(x) / 2)]
+set range [expr int(rand() * $half)]
 
 for {set i 0} {$i < $val(row)} {incr i} {
     for {set j 0} {$j < $val(col)} {incr j} {
@@ -152,15 +153,15 @@ for {set i 0} {$i < $val(row)} {incr i} {
         $node($k) set Z_ 0
 
         if {$cur_x <= $half} {
-            set destX [expr $cur_x + 20]
+            set destX [expr $cur_x + $range]
         } else {
-            set destX [expr $cur_x - 20]
+            set destX [expr $cur_x - $range]
         }
 
         if {$cur_y <= $half} {
-            set destY [expr $cur_y + 20]
+            set destY [expr $cur_y + $range]
         } else {
-            set destY [expr $cur_y - 20]
+            set destY [expr $cur_y - $range]
         }
 
         set velocity [expr int(rand() * 4) + 1]
@@ -182,6 +183,9 @@ for {set i 0} {$i < $val(nf)} {incr i} {
     while {$src == $dest} {
         set dest [expr int(rand() * $val(nn))]
     }
+
+    #$ns duplex-link $node($src) $node($dest) 2Mb 10ms DropTail
+    #$ns queue-limit $node($src) $node($dest) 50
 
     # create udp agents
     set udp [new Agent/UDP]
