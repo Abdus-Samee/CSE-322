@@ -94,25 +94,25 @@ The \textbf{4} graphs are shown below:
     \includegraphics[scale=0.6]{thruVnodes.png}
 \end{center}
 
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+Increasing the nodes generally decreases the throughput of the network, except for the node count \texttt{40}, which is random. The nodes move around with uniform speed and packet collisions increase and decreases the throughput as a result.
 
 \begin{center}
     \includegraphics[scale=0.6]{delayVnodes.png}
 \end{center}
 
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+The delay showed random behaviour as the node count increased. Sometimes it went uphill, sometimes downhill because the packet transfer was not reliable in UDP, so there was no synchronized delay. With increasing node count and exponential traffic in use, the congestion might increase in the wireless network causing high delay to occur.
 
 \begin{center}
     \includegraphics[scale=0.6]{delVnodes.png}
 \end{center}
 
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+Like the previous metric, the delivery ratio decreases with node count as the UDP network is not reliable with exponential traffic generated. So the number of delivered packets decreases. 
 
 \begin{center}
     \includegraphics[scale=0.6]{dropVnodes.png}
 \end{center}
 
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+The drop ratio showed exactly the opposite characteristic of the delivery ratio. It increases with node count. It occurs due to UDP being an unreliable network. With increasing node count, thenumber of packets dropped also increases as the traffic generated increases too.
 
 \section{Graphs - Changing Flow number}
 The \textbf{4} graphs are shown below:
@@ -121,24 +121,24 @@ The \textbf{4} graphs are shown below:
     \includegraphics[scale=0.6]{thruVflows.png}
 \end{center}
 
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+The throughput of the network increases naturally with the number of flow increased. There can be random behaviour noticed, as seen in case of flow count of \texttt{50}. Another run of simulation might generate different value owing to the fact that UDP is not a reliable network and so is not its output.
 
 \begin{center}
     \includegraphics[scale=0.6]{delayVflows.png}
 \end{center}
 
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+As the number of flows increases, the network starts to become congested and the delay increases.
 
 \begin{center}
     \includegraphics[scale=0.6]{delVflows.png}
 \end{center}
 
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+Like all other schemes, there random behaviours noticed while the delivery of a packet occurs. UDP does not guarantee the delivery of a packet and hence the probability of it being dropped is uncertain. One thing can be inference, that is with increasing flows generated via exponential traffic the delivery slows down.
 
 \begin{center}
     \includegraphics[scale=0.6]{dropVflows.png}
 \end{center}
 
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+The opposite scenario of delivery ratio can be witnessed here. With increasing flow generated via exponential traffic, the dropping of packets increases.
 
 \end{document}
