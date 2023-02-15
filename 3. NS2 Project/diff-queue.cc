@@ -41,6 +41,17 @@ void DiffQueue::enque(Packet* p)
             cout << "Packet dropped in enqueue...\n";
         }
     }
+
+    if(agent_ == NULL){
+        cout << "Agent is null...\n";
+    }
+
+    //call agent slowdown function if length of queue is greater than QUEUE_THRESH
+    if (diffSizes[dest] > QUEUE_THRESH) {
+        agent_->slowdown_(CLOSE_CWND_HALF|CLOSE_SSTHRESH_HALF);
+    }else {
+        agent_->opencwnd_();
+    }
     
     cout << "Enqued ... ... ...\n";
     //q_->enque(p);
@@ -81,6 +92,12 @@ Packet* DiffQueue::deque()
         }
     }
 
+    if(agent_ == NULL){
+        cout << "Agent is null...\n";
+    }
+
+    agent_->opencwnd_();
+
     cout << "Dequed ... ... ...\n";
   
     return (p);
@@ -108,7 +125,7 @@ nsaddr_t DiffQueue::node_queue_length(nsaddr_t dest)
 //calculates Q_j(d)
 nsaddr_t DiffQueue::next_hop_queue_length(Packet* p)
 {
-    // nsaddr_t next_hop = hdr_cmn::access(p)->next_hop();
+    nsaddr_t next_hop = hdr_cmn::access(p)->next_hop();
 
     // return qmap_[next_hop].size();
     cout << "Next hop queue length calculated...\n";
