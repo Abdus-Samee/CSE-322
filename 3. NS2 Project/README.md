@@ -12,5 +12,5 @@ source code. The list of the files modified which are also provided in the repos
  
  ## Compilation of the modified NS2 source code
  
- In order to modify go to the directory *~ns-allinone-2.35/ns-2.35* in the linux/wsl shell. Then execute the command `/configure` and then `make`.
+ In order to modify go to the directory *~ns-allinone-2.35/ns-2.35* in the linux/wsl shell. Then execute the commands `/configure` and then `make`.
  One might need to run `sudo make install` after if running a *tcl* script does not work.
