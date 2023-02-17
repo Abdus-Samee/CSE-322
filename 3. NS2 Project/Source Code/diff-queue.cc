@@ -21,16 +21,16 @@ void DiffQueue::enque(Packet* p)
 
     // if the destination is not in the map, create a new queue and set the size to 1
     if (qmap_.count(dest) == 0) {
-        cout << "Count 0 found...\n";
+        //cout << "Count 0 found...\n";
         vector<Packet*> newQueue;
         newQueue.push_back(p);
         qmap_[dest] = newQueue;
         diffSizes[dest] = 1;
-        cout << "Added to map for new dest...\n";
+        //cout << "Added to map for new dest...\n";
     }
     // if the destination is in the map, push the packet into the queue and increase the size
     else {
-        cout << "Count is not 0...\n";
+        //cout << "Count is not 0...\n";
         qmap_[dest].push_back(p);
         diffSizes[dest]++;
 
@@ -38,7 +38,7 @@ void DiffQueue::enque(Packet* p)
             qmap_[dest].pop_back();
             drop(p);
             diffSizes[dest]--;
-            cout << "Packet dropped in enqueue...\n";
+            //cout << "Packet dropped in enqueue...\n";
         }
     }
 
@@ -53,7 +53,7 @@ void DiffQueue::enque(Packet* p)
         agent_->opencwnd_();
     }
     
-    cout << "Enqued ... ... ...\n";
+    //cout << "Enqued ... ... ...\n";
     //q_->enque(p);
 }
 
@@ -63,7 +63,7 @@ Packet* DiffQueue::deque()
     Packet *p = NULL;
   
     int diff_priority = -21;
-    cout << "qmap_ traversal started... ...\n";
+    //cout << "qmap_ traversal started... ...\n";
 
     for (auto& kv : qmap_) {
         nsaddr_t dest = kv.first;
@@ -74,20 +74,20 @@ Packet* DiffQueue::deque()
         if (diff > diff_priority) {
             p = kv.second[0];
             diff_priority = diff;
-            cout << "Diff priority changed...\n";
+            //cout << "Diff priority changed...\n";
         }
     }
 
-    cout << "qmap_ traversal ended... ...\n";
+    //cout << "qmap_ traversal ended... ...\n";
 
     if (p != NULL) {
-        cout << "Packet is not null...\n";
+        //cout << "Packet is not null...\n";
         nsaddr_t dest = hdr_ip::access(p)->daddr(); //get packet destination
         qmap_[dest].erase(qmap_[dest].begin()); //remove packet from queue
         diffSizes[dest]--;  //decrease the size of the queue
         
         if (qmap_[dest].empty()) {
-            cout << "Dest queue is empty & henced erased...\n";
+            //cout << "Dest queue is empty & henced erased...\n";
             qmap_.erase(dest);
         }
     }
@@ -98,7 +98,7 @@ Packet* DiffQueue::deque()
 
     agent_->opencwnd_();
 
-    cout << "Dequed ... ... ...\n";
+    //cout << "Dequed ... ... ...\n";
   
     return (p);
 }
@@ -109,7 +109,7 @@ nsaddr_t DiffQueue::calcDiff(nsaddr_t dest, Packet* p)
     int diff = node_queue_length(dest) - next_hop_queue_length(p);
     if(diff < 0) diff = -diff;
 
-    cout << "Diff calculated...\n";
+    //cout << "Diff calculated...\n";
 
     return diff;
 }
@@ -117,7 +117,7 @@ nsaddr_t DiffQueue::calcDiff(nsaddr_t dest, Packet* p)
 //calculates Q_i(d)
 nsaddr_t DiffQueue::node_queue_length(nsaddr_t dest)
 {
-    cout << "Node queue length calculated...\n";
+    //cout << "Node queue length calculated...\n";
 
     return qmap_[dest].size();
 }
@@ -127,8 +127,12 @@ nsaddr_t DiffQueue::next_hop_queue_length(Packet* p)
 {
     nsaddr_t next_hop = hdr_cmn::access(p)->next_hop();
 
-    // return qmap_[next_hop].size();
-    cout << "Next hop queue length calculated...\n";
+    cout << "Next hop: " << next_hop << "\n";
 
-    return 21;
+    if(next_hop < 0) return 0;
+
+    return qmap_[next_hop].size();
+    //cout << "Next hop queue length calculated...\n";
+
+    //return 21;
 }
