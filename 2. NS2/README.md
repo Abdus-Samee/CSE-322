@@ -41,7 +41,7 @@
    export PATH=$PATH:<location>/ns-allinone-2.35/bin:<location>/ns-allinone-2.35/tcl8.5.10/unix:<location>/ns-allinone-2.35/tk8.5.10/unix
    export LD_LIBRARY_PATH=<location>/ns-allinone-2.35/otcl-1.14:<location>/ns-allinone-2.35/lib
    ```
-   As I installed in the **D** drive, my *<location>* was: `/mnt/d`
+   As I installed in the **D** drive, my *folder location* was: `/mnt/d`
  - Now execute the following: `$source .bashrc` or `$source /home/<username>/.bashrc` depending on the current working directory
   
 We can see that our ns2 is properly installed by running `$ns` in the cmd and seeing a **%** prompt pop off out of nowhere. We can get out of it using `Ctrl+C`. But
