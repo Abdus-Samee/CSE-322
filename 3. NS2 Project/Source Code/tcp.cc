@@ -655,7 +655,12 @@ void TcpAgent::output(int seqno, int reason)
 	tcph->seqno() = seqno;
 	tcph->ts() = Scheduler::instance().clock();
 	int is_retransmit = (seqno < maxseq_);
- 
+
+	sent_packets++;
+
+	//check threshold here
+	if(sent_packets > PACKET_THRESH) slowdown(CLOSE_SSTHRESH_HALF|CLOSE_CWND_ONE);
+	
 	// Mark packet for diagnosis purposes if we are in Quick-Start Phase
 	if (qs_approved_) {
 		hf->qs() = 1;
@@ -1119,7 +1124,7 @@ double TcpAgent::increase_param()
 
 void TcpAgent::opencwnd_()
 {
-	opencwnd_();
+	opencwnd();
 }
 
 /*
@@ -1250,7 +1255,7 @@ void TcpAgent::opencwnd()
 void
 TcpAgent::slowdown_(int how)
 {
-	slowdown_(how);
+	slowdown(how);
 }
 
 void
@@ -1793,6 +1798,11 @@ int TcpAgent::lossQuickStart()
 void TcpAgent::recv(Packet *pkt, Handler*)
 {
 	hdr_tcp *tcph = hdr_tcp::access(pkt);
+	hdr_ip *iph = hdr_ip::access(pkt);
+	//nsaddr_t dest = iph->daddr();
+
+	sent_packets--;
+	
 	int valid_ack = 0;
 	if (qs_approved_ == 1 && tcph->seqno() > last_ack_) 
 		endQuickStart();
@@ -2028,7 +2038,8 @@ void TcpAgent::closecwnd(int how)
 	switch (how) {
 	case 0:
 		/* timeouts */
-		ssthresh_ = int( window() / 2 );
+		// ssthresh_ = int( window() / 2 );
+		ssthresh_ = int( window() * ALPHA );
 		if (ssthresh_ < 2)
 			ssthresh_ = 2;
 		cwnd_ = int(wnd_restart_);
