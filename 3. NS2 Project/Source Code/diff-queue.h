@@ -9,11 +9,9 @@
 
 class DiffQueue : public Queue {
  public:
-   DiffQueue() { 
-		//q_ = new PacketQueue;
-		//pq_ = q_;
-    agent_ = new DiffQAgent();
-	}
+  DiffQueue() { 
+    q_ = new PacketQueue;
+  }
 
  protected:
    void enque(Packet*);
@@ -22,8 +20,7 @@ class DiffQueue : public Queue {
    int node_queue_length(nsaddr_t dest);
    int next_hop_queue_length(Packet* p);
 
-   //PacketQueue *q_;   // FIFO queue
-   TcpAgent* agent_; // agent for this queue
+   PacketQueue *q_;
    map<nsaddr_t, vector<Packet*>> qmap_; // map of priority queues
    map<nsaddr_t, int> diffSizes; // map of priority queue sizes
 };
