@@ -20,28 +20,28 @@ if {[lindex $argv 0] == "-packets"} {
 } else {
     set val(pkt_rate) 200
 }
-if {[lindex $argv 0] == "-tx"} {
-    set val(x) [lindex $argv 1]
-    set val(y) [lindex $argv 1]
-} else {
-    set val(x) 250
-    set val(y) 250
-}
 # if {[lindex $argv 0] == "-tx"} {
-#     set arg_pt [lindex $argv 1]
-    
-#     if {$arg_pt == 2} {
-#         set val(Pt_) 0.115421
-#     } elseif {$arg_pt == 3} {
-#         set val(Pt_) 0.58432
-#     } elseif {$arg_pt == 4} {
-#         set val(Pt_) 0.3171
-#     } elseif {$arg_pt == 5} {
-#         set val(Pt_) 2.28289e-11
-#     }
+#     set val(x) [lindex $argv 1]
+#     set val(y) [lindex $argv 1]
 # } else {
-#     set val(Pt_) 7.214e-3
+#     set val(x) 250
+#     set val(y) 250
 # }
+if {[lindex $argv 0] == "-tx"} {
+    set arg_pt [lindex $argv 1]
+    
+    if {$arg_pt == 2} {
+        set val(Pt_) 0.115421
+    } elseif {$arg_pt == 3} {
+        set val(Pt_) 0.58432
+    } elseif {$arg_pt == 4} {
+        set val(Pt_) 0.3171
+    } elseif {$arg_pt == 5} {
+        set val(Pt_) 2.28289e-11
+    }
+} else {
+    set val(Pt_) 7.214e-3
+}
 
 #         Pr * d^4 * L
 # Pt = ---------------------------
@@ -55,16 +55,12 @@ if {[lindex $argv 0] == "-tx"} {
 # 250m         0.28179
 # 300m         0.58432
 
-
-# set val(x) [lindex $argv 1]
-# set val(y) [lindex $argv 1]
-# set val(nn) [lindex $argv 3]
-# set val(nf) [lindex $argv 5]
+# https://stackoverflow.com/questions/29611571/what-is-the-value-of-pt-for-range-of-20m-in-ns2
 
 # ======================================================================
 # Define options
 
-# Phy/WirelessPhy set Pt_ $val(Pt_)              ;# transmission power
+Phy/WirelessPhy set Pt_ $val(Pt_)              ;# transmission power
 
 set val(chan)         Channel/WirelessChannel  ;# channel type
 set val(prop)         Propagation/TwoRayGround ;# radio-propagation model
@@ -75,8 +71,8 @@ set val(ifqlen)       50                       ;# max packet in ifq
 set val(netif)        Phy/WirelessPhy          ;# network interface type; Phy/WirelessPhy/802_15_4
 set val(mac)          Mac/802_11               ;# MAC type; Mac/802_15_4
 set val(rp)           AODV                     ;# ad-hoc routing protocol
-# set val(x)            500                      ;# x dimension of the area
-# set val(y)            500                      ;# y dimension of the area
+set val(x)            500                      ;# x dimension of the area
+set val(y)            500                      ;# y dimension of the area
 # set val(nn)           20                       ;# number of nodes
 # set val(nf)           10                       ;# number of flows
 
@@ -86,7 +82,7 @@ set val(rp)           AODV                     ;# ad-hoc routing protocol
 puts "Nodes: $val(nn)"
 puts "Flows: $val(nf)"
 puts "Packet rate: $val(pkt_rate)"
-# puts "T_x range: $val(Pt_)"
+puts "T_x range: $val(Pt_)"
 
 # trace file
 set trace_file [open 1805021_static.tr w]
@@ -140,6 +136,10 @@ $ns node-config -adhocRouting $val(rp) \
                 -phyType $val(netif) \
                 -energyModel "EnergyModel" \
                 -initialEnergy 500 \
+                -txPower 2.0 \
+                -rxPower 1.0 \
+                -idlePower 1.0 \
+                -sleepPower 0.001 \
                 -topoInstance $topo \
                 -channelType $val(chan) \
                 -agentTrace ON \
@@ -222,7 +222,7 @@ for {set i 0} {$i < $val(nf)} {incr i} {
     # Traffic generator -> FTP traffic
     set ftp [new Application/FTP]
     # define packet size
-    $ftp set packetSize_ 200
+    $ftp set packetSize_ 40
     # attach to agent
     $ftp attach-agent $tcp
     $ftp set rate_ $val(pkt_rate)
