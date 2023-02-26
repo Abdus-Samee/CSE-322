@@ -1,0 +1,137 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage[table]{xcolor}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+\title{%
+  \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Computer Networks Sessional}
+            
+        \vspace{0.5cm}
+        \LARGE
+        CSE - 322
+            
+        \vspace{1.5cm}
+            
+        \textbf{NS2 Project Report}\\
+        \vspace{1cm}
+        \Huge
+        \texttt{DiffQ Congestion Control}
+                        
+        \vspace{0.8cm}
+                        
+        \Large
+        Abdus Samee\\
+        ID: 1805021\\
+        Section: A\\
+        Dept: CSE\\
+    \end{center}
+  } 
+
+\date{}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\section{Personalized Parameters}
+The following parameters were assigned to me:
+
+\begin{description}
+     \item[Wireless Static Network] A static network topology has been designed and the modified source code is compared with the existing one with varying parameters like node count, flow count, packet per second, and coverage area. I was assigned to display this network using MAC 802.11
+ \end{description}
+ \begin{description}
+     \item[Wireless Mobile Network] A wireless network topology has been designed with mobile nodes and modified source code is compared with the existing one by varying node count, flow count, packet per second, and speed of nodes. In this network, I was assigned MAC 802.15.4. But using this one made by throughput calculation negative. So, it was switched to 802.11
+ \end{description}
+
+\section{Graphs - Changing Area}
+The \textbf{4} graphs are shown below:
+
+\newpage
+
+\begin{center}
+    \includegraphics[scale=0.6]{thruVarea.png}
+\end{center}
+
+Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delayVarea.png}
+\end{center}
+
+Time delay increases as the area increases since it takes a longer time to reach the sink. Since random sinks are being attached to random sources which are not identical, there can be exceptions resulting in a decrease as seen in the case of \texttt{1000X1000} and \texttt{1250X1250}.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delVarea.png}
+\end{center}
+
+The delivery of packets is not satisfactory and is random in this case. The ratio is so small. The NS2 simulator shows random values of delivery ratio every time it is run and that is why there are ups and downs as the area increases. A general inference can be that the delivery ratio increases as the area increases.
+
+\begin{center}
+    \includegraphics[scale=0.6]{dropVarea.png}
+\end{center}
+
+As discussed before, the drop of packets is too high compared to the delivery of the same. Due to exponential traffic increasing with time and queue length being constant at 50, packets are dropped at a higher rate. So a general inference here is that the drop ratio decreases as the area increases, opposite to that of the delivery ratio.
+
+\section{Graphs - Changing Node count}
+The \textbf{4} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{thruVnodes.png}
+\end{center}
+
+Increasing the nodes generally decreases the throughput of the network, except for the node count \texttt{40}, which is random. The nodes move around with uniform speed and packet collisions increase and decreases the throughput as a result.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delayVnodes.png}
+\end{center}
+
+The delay showed random behaviour as the node count increased. Sometimes it went uphill, sometimes downhill because the packet transfer was not reliable in UDP, so there was no synchronized delay. With increasing node count and exponential traffic in use, the congestion might increase in the wireless network causing high delay to occur.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delVnodes.png}
+\end{center}
+
+Like the previous metric, the delivery ratio decreases with node count as the UDP network is not reliable with exponential traffic generated. So the number of delivered packets decreases. 
+
+\begin{center}
+    \includegraphics[scale=0.6]{dropVnodes.png}
+\end{center}
+
+The drop ratio showed exactly the opposite characteristic of the delivery ratio. It increases with node count. It occurs due to UDP being an unreliable network. With increasing node count, thenumber of packets dropped also increases as the traffic generated increases too.
+
+\section{Graphs - Changing Flow number}
+The \textbf{4} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{thruVflows.png}
+\end{center}
+
+The throughput of the network increases naturally with the number of flow increased. There can be random behaviour noticed, as seen in case of flow count of \texttt{50}. Another run of simulation might generate different value owing to the fact that UDP is not a reliable network and so is not its output.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delayVflows.png}
+\end{center}
+
+As the number of flows increases, the network starts to become congested and the delay increases.
+
+\begin{center}
+    \includegraphics[scale=0.6]{delVflows.png}
+\end{center}
+
+Like all other schemes, there random behaviours noticed while the delivery of a packet occurs. UDP does not guarantee the delivery of a packet and hence the probability of it being dropped is uncertain. One thing can be inference, that is with increasing flows generated via exponential traffic the delivery slows down.
+
+\begin{center}
+    \includegraphics[scale=0.6]{dropVflows.png}
+\end{center}
+
+The opposite scenario of delivery ratio can be witnessed here. With increasing flow generated via exponential traffic, the dropping of packets increases.
+
+\end{document}
