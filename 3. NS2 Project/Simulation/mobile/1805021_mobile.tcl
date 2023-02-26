@@ -41,8 +41,8 @@ set val(ant)          Antenna/OmniAntenna      ;# Antenna type
 set val(ll)           LL                       ;# Link layer type
 set val(ifq)          Queue/DropTail/PriQueue  ;# Interface queue type
 set val(ifqlen)       50                       ;# max packet in ifq
-set val(netif)        Phy/WirelessPhy/802_15_4 ;# network interface type; Phy/WirelessPhy/802_15_4
-set val(mac)          Mac/802_15_4             ;# MAC type; Mac/802_15_4
+set val(netif)        Phy/WirelessPhy          ;# network interface type; Phy/WirelessPhy/802_15_4
+set val(mac)          Mac/802_11               ;# MAC type; Mac/802_15_4
 set val(rp)           AODV                     ;# ad-hoc routing protocol
 set val(x)            500                      ;# x dimension of the area
 set val(y)            500                      ;# y dimension of the area
@@ -107,6 +107,12 @@ $ns node-config -adhocRouting $val(rp) \
                 -antType $val(ant) \
                 -propType $val(prop) \
                 -phyType $val(netif) \
+                -energyModel "EnergyModel" \
+                -initialEnergy 500 \
+                -txPower 2.0 \
+                -rxPower 1.0 \
+                -idlePower 1.0 \
+                -sleepPower 0.001 \
                 -topoInstance $topo \
                 -channelType $val(chan) \
                 -agentTrace ON \
@@ -205,7 +211,7 @@ for {set i 0} {$i < $val(nf)} {incr i} {
     # Traffic generator -> FTP traffic
     set ftp [new Application/FTP]
     # define packet size
-    $ftp set packetSize_ 200
+    $ftp set packetSize_ 40
     # attach to agent
     $ftp attach-agent $tcp
     $ftp set rate_ $val(pkt_rate)
