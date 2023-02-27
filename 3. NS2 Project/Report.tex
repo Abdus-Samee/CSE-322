@@ -5,6 +5,7 @@
 \usepackage[table]{xcolor}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{hyperref}
 
 \title{%
   \begin{center}
@@ -45,93 +46,299 @@
 The following parameters were assigned to me:
 
 \begin{description}
-     \item[Wireless Static Network] A static network topology has been designed and the modified source code is compared with the existing one with varying parameters like node count, flow count, packet per second, and coverage area. I was assigned to display this network using MAC 802.11
+    \item[Selected Paper] \href{https://www.researchgate.net/profile/Sangtae-Ha/publication/221245820_DiffQ_Practical_Differential_Backlog_Congestion_Control_for_Wireless_Networks/links/574b20e608ae5c51e29ea50c/DiffQ-Practical-Differential-Backlog-Congestion-Control-for-Wireless-Networks.pdf}{This} paper has been selected for simulation in NS2.
+\end{description}
+\begin{description}
+     \item[Wireless Static Network] A static network topology has been designed and the modified source code is compared with the existing one with varying parameters like node count, flow count, packet per second, and coverage area. I was assigned to display this network using MAC 802.11. The nodes were arranged in a grid in the network topology.
  \end{description}
  \begin{description}
-     \item[Wireless Mobile Network] A wireless network topology has been designed with mobile nodes and modified source code is compared with the existing one by varying node count, flow count, packet per second, and speed of nodes. In this network, I was assigned MAC 802.15.4. But using this one made by throughput calculation negative. So, it was switched to 802.11
+     \item[Wireless Mobile Network] A wireless network topology has been designed with mobile nodes and modified source code is compared with the existing one by varying node count, flow count, packet per second, and speed of nodes. In this network, I was assigned MAC 802.15.4. But using this one made by throughput calculation negative. So, it was switched to 802.11. The nodes were arranged in a grid in the network topology.
+ \end{description}
+ \begin{description}
+     \item[Default parameters] The values of the parameters by default: node count: $40$, flow count: $20$, packet rate: $200$, Tx range: $1x$, and speed of a node: $10ms^{-1}$ 
+ \end{description}
+ \begin{description}
+     \item[Network Topology] As no particular topology was assigned, a grid topology has been considered for demonstration purposes in NS2.
  \end{description}
 
-\section{Graphs - Changing Area}
-The \textbf{4} graphs are shown below:
+ \section{Modifications in NS2}
+ The following modifications were made in the source code of NS2:
+ \begin{itemize}
+     \item A new queue file named \textbf{diff-queue.c} and its header file \textbf{diff-queue.h} have been added. This queue helps in backlog congestion by creating multiple queues in each agent for multiple destinations. The packets are dequeued based on the \textit{DiffQ Priority}.
+     \item Three new constants \textbf{sent-packets}, \textbf{ALPHA = $0.125$} and \textbf{BETA = $0.25$} have been included in the \textbf{tcp.h} file for manipulating the congestion window inside the \textbf{tcp.cc} file. The \textbf{sent-packets} variable is increased/decreased whenever a packet is sent and its \textbf{ACK} is received. Besides, some of the calculations and constants were manipulated using the constants mentioned above.
+ \end{itemize}
 
-\newpage
+\section{Wireless Network - Static}
+This network is simulated with MAC 802.11 by varying necessary parameters and generating graphs showcasing a comparison with existing implementation in NS2 with the modified source code. The modification has been made in the original \texttt{tcp.cc} file. So the difference lies in the queue used since a new queue has been implemented for the DiffQ congestion control and the original DropTail Priority Queue.
 
-\begin{center}
-    \includegraphics[scale=0.6]{thruVarea.png}
-\end{center}
-
-Keeping the rest of the parameters at baseline, the area was changed. The throughput increases mostly as area increases, except at \texttt{750X750} and \texttt{1000X1000}. Most of the time during the simulation, packets are dropped and due to randomness, sometimes throughput declines.
-
-\begin{center}
-    \includegraphics[scale=0.6]{delayVarea.png}
-\end{center}
-
-Time delay increases as the area increases since it takes a longer time to reach the sink. Since random sinks are being attached to random sources which are not identical, there can be exceptions resulting in a decrease as seen in the case of \texttt{1000X1000} and \texttt{1250X1250}.
+\subsection{Graphs - Changing Node Count}
+The \textbf{5} graphs are shown below:
 
 \begin{center}
-    \includegraphics[scale=0.6]{delVarea.png}
+    \includegraphics[scale=0.6]{static/thru-node.png}
 \end{center}
 
-The delivery of packets is not satisfactory and is random in this case. The ratio is so small. The NS2 simulator shows random values of delivery ratio every time it is run and that is why there are ups and downs as the area increases. A general inference can be that the delivery ratio increases as the area increases.
+Generally, the throughput decreases with the increase in node count in the original and modified source code. If closely looked at, the throughput decreases more in the modified source code(red coloured).
 
 \begin{center}
-    \includegraphics[scale=0.6]{dropVarea.png}
+    \includegraphics[scale=0.6]{static/delay-node.png}
 \end{center}
 
-As discussed before, the drop of packets is too high compared to the delivery of the same. Due to exponential traffic increasing with time and queue length being constant at 50, packets are dropped at a higher rate. So a general inference here is that the drop ratio decreases as the area increases, opposite to that of the delivery ratio.
-
-\section{Graphs - Changing Node count}
-The \textbf{4} graphs are shown below:
+The delay in transmitting packets is less in the modified source code than in the original source code. It shows a gradual decrease in delay with increasing node count.
 
 \begin{center}
-    \includegraphics[scale=0.6]{thruVnodes.png}
+    \includegraphics[scale=0.6]{static/deliver-node.png}
 \end{center}
 
-Increasing the nodes generally decreases the throughput of the network, except for the node count \texttt{40}, which is random. The nodes move around with uniform speed and packet collisions increase and decreases the throughput as a result.
+The delivery ratio is higher since the delay in packet transmission is lower in the modified source code. In fact, both the modified and original source code has a good delivery ratio since their basis is the original TCP.
 
 \begin{center}
-    \includegraphics[scale=0.6]{delayVnodes.png}
+    \includegraphics[scale=0.6]{static/drop-node.png}
 \end{center}
 
-The delay showed random behaviour as the node count increased. Sometimes it went uphill, sometimes downhill because the packet transfer was not reliable in UDP, so there was no synchronized delay. With increasing node count and exponential traffic in use, the congestion might increase in the wireless network causing high delay to occur.
+The drop ratio shows the mirror image of the delivery ratio in both versions of the code. Although modified source code is seen to have a lower drop ratio than original source code, their ranges are insignificant.
 
 \begin{center}
-    \includegraphics[scale=0.6]{delVnodes.png}
+    \includegraphics[scale=0.6]{static/energy-node.png}
 \end{center}
 
-Like the previous metric, the delivery ratio decreases with node count as the UDP network is not reliable with exponential traffic generated. So the number of delivered packets decreases. 
+The rate of energy per packet in both versions of the code lies within the range of $(0.027, 0.028)$ Joules.
+
+\subsection{Graphs - Changing Flow Count}
+The \textbf{5} graphs are shown below:
 
 \begin{center}
-    \includegraphics[scale=0.6]{dropVnodes.png}
+    \includegraphics[scale=0.6]{static/thru-flow.png}
 \end{center}
 
-The drop ratio showed exactly the opposite characteristic of the delivery ratio. It increases with node count. It occurs due to UDP being an unreliable network. With increasing node count, thenumber of packets dropped also increases as the traffic generated increases too.
-
-\section{Graphs - Changing Flow number}
-The \textbf{4} graphs are shown below:
+Generally, the throughput decreases with the increase in flow count in the original and modified source code. If closely looked at, the throughput decreases more in the original source code(purple coloured), except when the flow count is $40$.
 
 \begin{center}
-    \includegraphics[scale=0.6]{thruVflows.png}
+    \includegraphics[scale=0.6]{static/delay-flow.png}
 \end{center}
 
-The throughput of the network increases naturally with the number of flow increased. There can be random behaviour noticed, as seen in case of flow count of \texttt{50}. Another run of simulation might generate different value owing to the fact that UDP is not a reliable network and so is not its output.
+The delays in packet transmission in both the original and modified configurations go hand-in-hand, increasing with increasing flow count.
 
 \begin{center}
-    \includegraphics[scale=0.6]{delayVflows.png}
+    \includegraphics[scale=0.6]{static/deliver-flow.png}
 \end{center}
 
-As the number of flows increases, the network starts to become congested and the delay increases.
+The delivery ratio decreases in both versions of the code with increasing flow count because of the congestion in the network due to excessive flows. Still, the ratio remains above $95\%$.
 
 \begin{center}
-    \includegraphics[scale=0.6]{delVflows.png}
+    \includegraphics[scale=0.6]{static/drop-flow.png}
 \end{center}
 
-Like all other schemes, there random behaviours noticed while the delivery of a packet occurs. UDP does not guarantee the delivery of a packet and hence the probability of it being dropped is uncertain. One thing can be inference, that is with increasing flows generated via exponential traffic the delivery slows down.
+The drop ratio is the exact mirror image of the delivery ratio in the respective codes.
 
 \begin{center}
-    \includegraphics[scale=0.6]{dropVflows.png}
+    \includegraphics[scale=0.6]{static/energy-flow.png}
 \end{center}
 
-The opposite scenario of delivery ratio can be witnessed here. With increasing flow generated via exponential traffic, the dropping of packets increases.
+The energy consumption per packet increases with the increasing number of flows.
+
+\subsection{Graphs - Changing Packet Rate}
+The \textbf{5} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/thru-rate.png}
+\end{center}
+
+The throughput is on the rise for original source code but declines for the modified source code when the packet rate is increased. They have the highest contrast at a packet rate of $300$ but after that, they increase, even though original source code performs better.
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/delay-rate.png}
+\end{center}
+
+With the increase in packet rate, the delay in packet transmission usually decreases in modified source code but increases in original source code, with some exceptions at some points.
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/deliver-rate.png}
+\end{center}
+
+The delivery ratio shows unusual behaviour with an increasing rate with no standard pattern in its change. But one thing is constant, that is, both versions of code have a higher delivery ratio.
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/drop-rate.png}
+\end{center}
+
+Since the delivery ratio is higher, the drop ratio is significantly lower in both versions of the code.
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/energy-rate.png}
+\end{center}
+
+The rate of energy consumption per packet is within the range of $(0.025, 0.028)$ for both versions of the code. Also, it has unprecedented ups and downs.
+
+\subsection{Graphs - Changing Tx Range}
+The \textbf{5} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/thru-tx.png}
+\end{center}
+
+The modified source code gives high throughput when the Tx range is on the rise. The cause is the updated DiffQueue which is used to control the congestion and reduce packet drop and delay.
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/delay-tx.png}
+\end{center}
+
+The delay graph has ups and downs with increasing Tx range. Generally, we can see a descent because as the transmission range increases, there is a delay in transmitting packets to a longer distance.
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/deliver-tx.png}
+\end{center}
+
+The delivery ratio in both codes has a similar pattern due to the usage of the basic TCP congestion control. But the modified code shows a little lower ratio than the original counterpart.
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/drop-tx.png}
+\end{center}
+
+The drop ratio is a bit higher in the modified NS2 code than the original one owing to the lower delivery ratio with increasing Tx range.
+
+\begin{center}
+    \includegraphics[scale=0.6]{static/energy-tx.png}
+\end{center}
+
+With increasing Tx range, the energy consumed per packet increases. It is due to the fact that more energy is required to transmit packets to farther distances.
+
+\section{Wireless Network - Mobile}
+This network is simulated with MAC 802.11 by varying necessary parameters and generating graphs showcasing a comparison with existing implementation in NS2 with the modified source code. The original assignment was MAC 802.15.4, but that gave the throughput negative. So it was changed. The modification has been made in the original \texttt{tcp.cc} file. So the difference lies in the queue used since a new queue has been implemented for the DiffQ congestion control.
+
+\subsection{Graphs - Changing Node Count}
+The \textbf{5} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/thru-node.png}
+\end{center}
+
+Generally, the throughput decreases with the increase in node count in both the original and modified source code. If closely looked at, the throughput decreases more in the modified source code(red coloured). Moreover, the throughput also shows a rise with increasing node count for original source code(purple coloured).
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/delay-node.png}
+\end{center}
+
+The delay is higher at some points in the modified DiffQ congestion control than in the usual TCP congestion control.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/deliver-node.png}
+\end{center}
+
+The delivery ratio drops in both cases with increasing node count, the modified having a lower ratio at every point.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/drop-node.png}
+\end{center}
+
+The drop ratio increases with increasing node count in both congestion controls.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/energy-node.png}
+\end{center}
+
+The rate of energy consumption in DiffQ congestion control lies at a higher range than the original TCP control with DropTail Priority Queue with increasing node count.
+
+\subsection{Graphs - Changing Flow Count}
+The \textbf{5} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/thru-flow.png}
+\end{center}
+
+Generally, the throughput decreases with the increase in flow count in the original and modified source code. If closely looked at, the throughput decreases more in the modified source code(red coloured). Most of the time the original source code performs better.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/delay-flow.png}
+\end{center}
+
+The delay in packet transmission is quite the same in both versions of the code, with subtle differences.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/deliver-flow.png}
+\end{center}
+
+Delivery ratio drops in general with increasing flow count.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/drop-flow.png}
+\end{center}
+
+The drop ratio increases in general with increasing flow count.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/energy-flow.png}
+\end{center}
+
+The energy consumption rate in DiffQ congestion control remains at a constant range while it has ups and downs in the TCP congestion control with DropTail Priority Queue.
+
+\subsection{Graphs - Changing Packet Rate}
+The \textbf{5} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/thru-rate.png}
+\end{center}
+
+The throughput is on the rise for original source code but declines for the modified source code when the packet rate is increased. They have the highest contrast at a packet rate of $300$ but after that, they increase, even though original source code performs better.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/delay-rate.png}
+\end{center}
+
+With an increasing rate of packet transmission, the delay in packet transmission continuously grows in both cases.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/deliver-rate.png}
+\end{center}
+
+The delivery ratio in both cases has no definite pattern. It has ups and downs.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/drop-rate.png}
+\end{center}
+
+The drop ratio in both versions of the code has no definite pattern. Sometimes it grows and sometimes it falls.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/energy-rate.png}
+\end{center}
+
+The same goes for the energy consumption rate as it has ups and downs in both versions of the code.
+
+\subsection{Graphs - Changing Node Speed}
+The \textbf{5} graphs are shown below:
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/thru-speed.png}
+\end{center}
+
+The modified source code gives high throughput when the Tx range is on the rise. The cause is the updated DiffQueue which is used to control the congestion and reduce packet drop and delay.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/delay-speed.png}
+\end{center}
+
+The delay in the usual config has a criss-cross pattern where it sometimes grows and sometimes falls. In the modified config, the delay falls gradually, with a spike in between.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/deliver-speed.png}
+\end{center}
+
+Although the delivery ratio is higher in both cases, the modified version of the code lies at a higher range than the original version.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/drop-speed.png}
+\end{center}
+
+The drop ratio has a subtle gap between the two versions. In the original version, we can say that it gradually increases while in the modified version it gradually decreases.
+
+\begin{center}
+    \includegraphics[scale=0.6]{mobile/energy-speed.png}
+\end{center}
+
+The energy consumption rate is a bit higher in the modified version of the code than in the original version and is on the rise with the increasing speed of the nodes.
+
+\section{Summary}
+As the DiffQ algorithm is added on top of the existing TCP algorithm, they most of the time lie side by side in the graphs. But one noticeable thing from the graphs is that the DiffQ algorithm takes up more energy per packet than the existing one. In some cases, it shows a better Delivery ratio and less Drop ratio owing to the fact that packets are now handled in the queues of agents, and only the packet with the highest DiffQ priority whose release will not add to the congestion of the network is dequeued. Moreover, increasing node and flow count decreases the throughput of the network. As a whole, DiffQ congestion control separately cannot compete with TCP but when merged, it will work almost like TCP, sometimes better than TCP.
 
 \end{document}
