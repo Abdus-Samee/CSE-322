@@ -30,17 +30,19 @@ if {[lindex $argv 0] == "-packets"} {
 if {[lindex $argv 0] == "-tx"} {
     set arg_pt [lindex $argv 1]
     
-    if {$arg_pt == 2} {
-        set val(Pt_) 0.115421
+    if {$arg_pt == 1} {
+        set val(PT) 1
+    } elseif {$arg_pt == 2} {
+        set val(PT) 2
     } elseif {$arg_pt == 3} {
-        set val(Pt_) 0.58432
+        set val(PT) 3
     } elseif {$arg_pt == 4} {
-        set val(Pt_) 0.3171
+        set val(PT) 4
     } elseif {$arg_pt == 5} {
-        set val(Pt_) 2.28289e-11
+        set val(PT) 5
     }
 } else {
-    set val(Pt_) 7.214e-3
+    set val(PT) 1
 }
 
 #         Pr * d^4 * L
@@ -60,7 +62,7 @@ if {[lindex $argv 0] == "-tx"} {
 # ======================================================================
 # Define options
 
-Phy/WirelessPhy set Pt_ $val(Pt_)              ;# transmission power
+# Phy/WirelessPhy set Pt_ $val(Pt_)              ;# transmission power
 
 set val(chan)         Channel/WirelessChannel  ;# channel type
 set val(prop)         Propagation/TwoRayGround ;# radio-propagation model
@@ -76,13 +78,16 @@ set val(y)            500                      ;# y dimension of the area
 # set val(nn)           20                       ;# number of nodes
 # set val(nf)           10                       ;# number of flows
 
+set curr [Phy/WirelessPhy set Pt_]
+set curr_Pt [expr $val(PT)* $curr]
+Phy/WirelessPhy set Pt_ $curr_Pt
 # =======================================================================
 
 # print the above args
 puts "Nodes: $val(nn)"
 puts "Flows: $val(nf)"
 puts "Packet rate: $val(pkt_rate)"
-puts "T_x range: $val(Pt_)"
+# puts "T_x range: $val(Pt_)"
 
 # trace file
 set trace_file [open 1805021_static.tr w]
