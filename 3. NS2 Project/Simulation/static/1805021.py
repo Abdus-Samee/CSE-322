@@ -25,20 +25,36 @@ plt.plot(l, data2, color="red", label="Modified Config", marker="o")
 plt.title("Throughput vs " + name.capitalize())
 plt.xlabel(name.capitalize())
 plt.ylabel("Throughput(bits/s)")
+plt.legend(loc="upper right")
 plt.xticks(l, [str(x) for x in l])
 plt.yticks(data, [str(round(x, 6)) for x in data], rotation=45)
+for x,y in zip(l, data2):
+    label = "{:.2f}".format(y)
+    plt.annotate(label, # this is the text
+        (x,y), # these are the coordinates to position the label
+        textcoords="offset points", # how to position the text
+        xytext=(0,10), # distance from text to points (x,y)
+        ha='center') # horizontal alignment can be left, right or center
 plt.show()
 
 data = df["second"].values.flatten().tolist()
 data2 = df2["s"].values.flatten().tolist()
 # print(data)
-plt.plot(l, data, color="yellow", label="Usual Config", marker="o")
+plt.plot(l, data, color="brown", label="Usual Config", marker="o")
 plt.plot(l, data2, color="red", label="Modified Config", marker="o")
 plt.title("Delay vs " + name.capitalize())
 plt.xlabel(name.capitalize())
 plt.ylabel("Delay(s)")
+plt.legend(loc="upper right")
 plt.xticks(l, [str(x) for x in l])
 plt.yticks(data, [str(round(x, 6)) for x in data], rotation=45)
+for x,y in zip(l, data2):
+    label = "{:.2f}".format(y)
+    plt.annotate(label, # this is the text
+        (x,y), # these are the coordinates to position the label
+        textcoords="offset points", # how to position the text
+        xytext=(0,10), # distance from text to points (x,y)
+        ha='center') # horizontal alignment can be left, right or center
 plt.show()
 
 data = df["third"].values.flatten().tolist()
@@ -49,8 +65,16 @@ plt.plot(l, data2, color="red", label="Modified Config", marker="o")
 plt.title("Delivery Ratio vs " + name.capitalize())
 plt.xlabel(name.capitalize())
 plt.ylabel("Delivery Ratio")
+plt.legend(loc="upper right")
 plt.xticks(l, [str(x) for x in l])
 plt.yticks(data, [str(round(x, 6)) for x in data], rotation=45)
+for x,y in zip(l, data2):
+    label = "{:.2f}".format(y)
+    plt.annotate(label, # this is the text
+        (x,y), # these are the coordinates to position the label
+        textcoords="offset points", # how to position the text
+        xytext=(0,10), # distance from text to points (x,y)
+        ha='center') # horizontal alignment can be left, right or center
 plt.show()
 
 data = df["fourth"].values.flatten().tolist()
@@ -63,6 +87,13 @@ plt.xlabel(name.capitalize())
 plt.ylabel("Drop Ratio")
 plt.xticks(l, [str(x) for x in l])
 plt.yticks(data, [str(round(x, 6)) for x in data], rotation=45)
+for x,y in zip(l, data2):
+    label = "{:.2f}".format(y)
+    plt.annotate(label, # this is the text
+        (x,y), # these are the coordinates to position the label
+        textcoords="offset points", # how to position the text
+        xytext=(0,10), # distance from text to points (x,y)
+        ha='center') # horizontal alignment can be left, right or center
 plt.show()
 
 data = df["fifth"].values.flatten().tolist()
@@ -73,8 +104,16 @@ plt.plot(l, data2, color="red", label="Modified Config", marker="o")
 plt.title("Energy/packet vs " + name.capitalize())
 plt.xlabel(name.capitalize())
 plt.ylabel("Joules/packet")
+plt.legend(loc="upper right")
 plt.xticks(l, [str(x) for x in l])
 plt.yticks(data, [str(round(x, 6)) for x in data], rotation=45)
+for x,y in zip(l, data2):
+    label = "{:.2f}".format(y)
+    plt.annotate(label, # this is the text
+        (x,y), # these are the coordinates to position the label
+        textcoords="offset points", # how to position the text
+        xytext=(0,10), # distance from text to points (x,y)
+        ha='center') # horizontal alignment can be left, right or center
 plt.show()
 
 # data = df["sixth"].values.flatten().tolist()
@@ -85,6 +124,7 @@ plt.show()
 # plt.title("Energy/byte vs " + name.capitalize())
 # plt.xlabel(name.capitalize())
 # plt.ylabel("Energy/byte")
+# plt.legend(loc="upper right")
 # plt.xticks(l, [str(x) for x in l])
 # plt.yticks(data, [str(round(x, 6)) for x in data], rotation=45)
 # plt.show()
