@@ -19,7 +19,7 @@ mod_output_tx="mod_tx.txt"
 declare -i nodes=(20 40 60 80 100)
 declare -i flows=(10 20 30 40 50)
 declare -i rate=(100 200 300 400 500)
-declare -i tx=(250 500 750 1000 1250)
+declare -i tx=(1 2 3 4 5)
 
 echo "Throughput(bits/s), Delay(s), Delivery Ratio, Drop Ratio, Energy(J/packet), Energy(J/byte)" > $output_nodes
 for i in "${nodes[@]}";do
